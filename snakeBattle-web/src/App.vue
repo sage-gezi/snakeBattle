@@ -1,8 +1,12 @@
 <template>
-  <BasicLayoutView />
+  <NavBar></NavBar>
+  <router-view></router-view>
 </template>
 <script setup>
-import BasicLayoutView from '@/layout/BasicLayoutView.vue'
+import NavBar from './components/NavBar.vue';
 </script>
-
-<style scoped></style>
+<style>
+body {
+  background-color: darkgrey;
+}
+</style>

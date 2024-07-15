@@ -1,2 +1,6 @@
-<template>pksdfadsafasdf</template>
-<script setup></script>
+<template>
+  <GamePlayground></GamePlayground>
+</template>
+<script setup>
+import GamePlayground from '../../components/GamePlayground.vue';
+</script>
