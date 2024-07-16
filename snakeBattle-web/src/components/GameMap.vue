@@ -12,8 +12,6 @@ let canvas = ref(null);
 
 onMounted(() => {
   new GameMap(canvas.value.getContext('2d'), parent.value);
-  console.log(canvas.value);
-  console.log(parent.value);
 });
 </script>
 

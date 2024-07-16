@@ -1,4 +1,5 @@
 import { GameObject } from './GameObject';
+import { Wall } from './Wall';
 
 export class GameMap extends GameObject {
   constructor(ctx, parent) {
@@ -9,8 +10,72 @@ export class GameMap extends GameObject {
 
     this.rows = 13;
     this.cols = 13;
+    this.inner_walls = 30;
+    this.walls = [];
   }
-  start() {}
+  start() {
+    for (let i = 0; i < 1000; i++) {
+      if (this.create_wall()) {
+        return true;
+      }
+    }
+  }
+
+  check_connectivity(g, sx, sy, ex, ey) {
+    if (sx == ex && sy == ey) return true;
+    g[sx][sy] = true;
+    let dx = [-1, 0, 1, 0],
+      dy = [0, 1, 0, -1];
+    for (let i = 0; i < 4; i++) {
+      let x = sx + dx[i];
+      let y = sy + dy[i];
+      if (!g[x][y] && this.check_connectivity(g, x, y, ex, ey)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  create_wall() {
+    const g = [];
+    for (let r = 0; r < this.rows; r++) {
+      g[r] = [];
+      for (let c = 0; c < this.cols; c++) {
+        g[r][c] = false;
+      }
+    }
+
+    for (let r = 0; r < this.rows; r++) {
+      g[r][0] = g[r][this.cols - 1] = true;
+    }
+    for (let c = 0; c < this.cols; c++) {
+      g[0][c] = g[this.rows - 1][c] = true;
+    }
+
+    for (let i = 0; i < this.inner_walls / 2; i++) {
+      for (let j = 0; j < 10000; j++) {
+        let r = parseInt(Math.random() * this.rows);
+        let c = parseInt(Math.random() * this.cols);
+        if (g[r][c] || g[c][r]) continue;
+        if ((r == this.rows - 2 && c == 1) || (r == 1 && c == this.cols - 2)) continue;
+        g[r][c] = g[c][r] = true;
+        break;
+      }
+    }
+    const copy_g = JSON.parse(JSON.stringify(g));
+    if (!this.check_connectivity(copy_g, this.rows - 2, 1, 1, this.cols - 2)) {
+      return false;
+    }
+
+    for (let r = 0; r < this.rows; r++) {
+      for (let c = 0; c < this.cols; c++) {
+        if (g[r][c]) {
+          this.walls.push(new Wall(r, c, this));
+        }
+      }
+    }
+    return true;
+  }
   update_size() {
     this.L = parseInt(
       Math.min(this.parent.clientWidth / this.cols, this.parent.clientHeight / this.rows)
